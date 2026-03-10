@@ -7,7 +7,7 @@ class Parameters(BaseModel):
     apartments_json_path: str = 'data/apartments.json'
     tenants_json_path: str = 'data/tenants.json'
     bills_json_path: str = 'data/bills.json'
-
+    transfers_json_path: str = 'data/transfers.json'
 
 class Room(BaseModel):
     name: str
@@ -62,6 +62,22 @@ class Rachunek(BaseModel):
         assert isinstance(data, dict), "Expected a dictionary of bills"
         return {key: Rachunek(**rachunek) for key, rachunek in data.items()}
 
+
+class Transfer(BaseModel):
+    amount_pln: float
+    date: str
+    settlement_year: int | None
+    settlement_month: int | None
+    tenant: str
+
+    @staticmethod
+    def from_json_file(file_path: str) -> List['Transfer']:
+        data = None
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        assert isinstance(data, list), "Expected a list of transfers"
+        return [Transfer(**transfer) for transfer in data]
+    
 
 class Manager:
     def __init__(self, parameters: Parameters):
